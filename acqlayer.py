@@ -93,3 +93,8 @@ def writeFeed(page_url, cache_dir="cache/"):
     df.to_csv(filename)
 
     return True
+
+page_url = "https://trends.google.com/trends/explore?cat=19&date=today%203-m&geo=US&gprop=news&q=immigration,ban"
+# page_url = "static.txt"
+
+writeFeed(page_url)
