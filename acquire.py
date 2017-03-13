@@ -33,9 +33,10 @@ def parseURL(page_url):
     return feed_url
 
 def cleanFeed(json_feed):
-    start_string = "// Data table response\n\rgoogle.visualization.Query.setResponse["
-
-    return json_feed.replace('}{','},{').split('setResponse[')[1].replace(",,",',').replace('new Date','').replace("(", "[").replace(")", "]").replace('} {','}, {').rstrip('];')
+    clean_feed = json_feed.replace('}{','},{').replace(",,",',').replace('new Date','').replace("(", "[").replace(")", "]").replace('} {','}, {').rstrip('];')
+    print('------\n',clean_feed,'\n------')
+    clean_feed = clean_feed.split('setResponse[')[1]
+    return clean_feed
 
 def getFeed(page_url):
     feed_url = parseURL(page_url)
@@ -93,8 +94,8 @@ def writeFeed(page_url, cache_dir="cache/"):
     df.to_csv(filename)
 
     return True
-
-page_url = "https://trends.google.com/trends/explore?cat=19&date=today%203-m&geo=US&gprop=news&q=immigration,ban"
-# page_url = "static.txt"
-
-writeFeed(page_url)
+#
+# page_url = "https://trends.google.com/trends/explore?cat=19&date=today%203-m&geo=US&gprop=news&q=immigration,ban"
+#
+#
+# print(writeFeed(page_url))
