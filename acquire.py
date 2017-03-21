@@ -86,7 +86,7 @@ def nameFile(json_feed):
 
     return name
 
-def writeFeed(page_url, cache_dir="cache/"):
+def saveFeed(page_url, cache_dir="cache/"):
     cache_dir = cache_dir if '/' in cache_dir else cache_dir + '/'
     feed = getFeed(page_url)
     df = translateCSV(feed)
@@ -95,8 +95,3 @@ def writeFeed(page_url, cache_dir="cache/"):
     df.to_csv(filename)
 
     return True
-#
-page_url = "https://trends.google.com/trends/explore?cat=19&date=today%203-m&geo=US&gprop=news&q=immigration,ban"
-#
-#
-print(writeFeed(page_url))

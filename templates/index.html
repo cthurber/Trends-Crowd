@@ -25,18 +25,16 @@
           <div class="inner cover">
             <h1 class="cover-heading">Trends Crowd</h1>
             <p class="lead">
-              <form method="POST" action="/get-feed">
+              <form method="POST" action="/">
                 <div class="input-group input-group-lg">
-                  <input type="text" class="form-control" placeholder="Trends URL">
+                  <!-- <input type="text" class="form-control" placeholder="Trends URL"> -->
+                  {{ form.trends_url(class_='form-control',placeholder="Trends URL",type="text") }}
                   <span class="input-group-btn">
-                    {{ form.trends_url }}
+
                     <button class="btn btn-success" type="button">Go</button>
                   </span>
                 </div><!-- /input-group -->
               </form>
-            </p>
-            <p class="lead">
-              <a href="#" class="btn btn-lg btn-default">Retrieve Data</a>
             </p>
           </div>
 
