@@ -4,7 +4,7 @@
 Trends-Crowd Acuisition Layer
 Author: Chris Thurber
 Created: February 24, 2017
-Descrip: Responsible for parsing user-friendly Trends URLs to JSON counterparts + calling C++ scraper
+Descrip: Responsible for parsing user-friendly Trends URLs to JSON counterparts + downloading data
 
 """
 
@@ -92,6 +92,6 @@ def saveFeed(page_url, cache_dir="cache/"):
     df = translateCSV(feed)
     filename = cache_dir+nameFile(feed)+'.csv'
     if not os.path.exists(cache_dir): os.makedirs(cache_dir)
-    df.to_csv(filename)
+    df.to_csv(filename,index=False)
 
     return True
