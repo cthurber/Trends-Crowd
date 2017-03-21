@@ -14,9 +14,9 @@ from time import gmtime, strftime
 
 def parseURL(page_url):
     filters = {
-        "date" : re.findall("&date=(.*\d+\-.)&.",page_url)[0],
-        "query" : re.findall("&q=(.*)",page_url)[0].replace(' ','%20'),
-        "geo" : re.findall("&geo=(.*)&.",page_url)[0]
+        "date" : re.findall("date=(.*\d+\-.)&.",page_url)[0],
+        "query" : re.findall("q=(.*)",page_url)[0].replace(' ','%20'),
+        "geo" : re.findall("geo=(.*)&.",page_url)[0]
     }
 
     comps = {
@@ -34,7 +34,7 @@ def parseURL(page_url):
 
 def cleanFeed(json_feed):
     clean_feed = json_feed.replace('}{','},{').replace(",,",',').replace('new Date','').replace("(", "[").replace(")", "]").replace('} {','}, {').rstrip('];')
-    print('------\n',clean_feed,'\n------')
+    # print('------\n',clean_feed,'\n------')
     clean_feed = clean_feed.split('setResponse[')[1]
     return clean_feed
 
