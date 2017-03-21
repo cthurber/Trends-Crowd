@@ -8,7 +8,7 @@ Descrip: Responsible for parsing user-friendly Trends URLs to JSON counterparts 
 
 """
 
-import json,requests,re
+import json,requests,re,os
 import pandas as pd
 from time import gmtime, strftime
 
@@ -91,11 +91,12 @@ def writeFeed(page_url, cache_dir="cache/"):
     feed = getFeed(page_url)
     df = translateCSV(feed)
     filename = cache_dir+nameFile(feed)+'.csv'
+    if not os.path.exists(cache_dir): os.makedirs(cache_dir)
     df.to_csv(filename)
 
     return True
 #
-# page_url = "https://trends.google.com/trends/explore?cat=19&date=today%203-m&geo=US&gprop=news&q=immigration,ban"
+page_url = "https://trends.google.com/trends/explore?cat=19&date=today%203-m&geo=US&gprop=news&q=immigration,ban"
 #
 #
-# print(writeFeed(page_url))
+print(writeFeed(page_url))
