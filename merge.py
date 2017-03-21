@@ -32,8 +32,11 @@ def mapDataFrames(cache_path):
 
 df_index = (mapDataFrames(cache_path))
 
+# Check if masterfile exists?
+#   if no: write merged version from df_index
+#   if yes: merge all new dataframes with master from 'data' folder
 
-# Print at end
+# Write merged version
 """
 for df in dfs:
     frame = dfs[df][0]
