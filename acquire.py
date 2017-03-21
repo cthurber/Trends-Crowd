@@ -92,6 +92,6 @@ def saveFeed(page_url, cache_dir="cache/"):
     df = translateCSV(feed)
     filename = cache_dir+nameFile(feed)+'.csv'
     if not os.path.exists(cache_dir): os.makedirs(cache_dir)
-    df.to_csv(filename,index=False)
+    df.to_csv(filename)
 
     return True
