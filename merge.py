@@ -15,24 +15,25 @@ import pandas as pd
 cache_path = "./cache/"
 output_path = "./data/"
 
-def getRootFeed(filename): return re.findall("(.*)__", filename)[0]
-def getFilenameKeys(cache_path): return list(set(map(getRootFeed, os.listdir(cache_path))))
+def getFeedName(filename): return re.findall("(.*)__", filename)[0]
+def getFilenames(cache_path): return list(set(map(getFeedName, os.listdir(cache_path))))
 def getNumCols(filename): return len(open(filename).readline().split(','))
 def toDataFrame(filename,icol=0): return pd.read_csv(filename,index_col=int(icol))
-def masterFileExists(feedname,feeddir): True if(feedname in os.listdir(feeddir)) else False
+def fileExists(feedname,feeddir): True if(feedname in os.listdir(feeddir)) else False
 
 # Returns {feedname : [DataFrame1,DataFrame2, ...]} pairing
 def mapDataFrames(cache_path):
+    # Further efficiency?: dict.fromkeys([1, 2, 3, 4])
     filenames = {}
-    for key in getFilenameKeys(cache_path):
-        filenames[key] = [toDataFrame(cache_path + str(filename)) for filename in os.listdir(cache_path) if key == getRootFeed(filename)]
+    for key in getFilenames(cache_path):
+        filenames[key] = [toDataFrame(cache_path + str(filename)) for filename in os.listdir(cache_path) if key == getFeedName(filename)]
     return filenames
 
 df_index = (mapDataFrames(cache_path))
 print(df_index)
 
 # for feed in index
-if(masterFileExists(feed,output_path)):
+if(os.path.exists(output_path + feed)):
     # merge all new dataframes with master from 'data' folder
 #   if no: write merged version from df_index
 
