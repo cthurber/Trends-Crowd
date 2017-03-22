@@ -30,18 +30,30 @@ def parseURL(page_url):
     }
 
     feed_url = comps['base'] + comps['date'] + filters['date'] + comps['query'] + filters['query'] + comps['time'] + comps['content'] + comps['cid'] + comps['export']
+
     return feed_url
 
 def cleanFeed(json_feed):
     clean_feed = json_feed.replace('}{','},{').replace(",,",',').replace('new Date','').replace("(", "[").replace(")", "]").replace('} {','}, {').rstrip('];')
-    # print('------\n',clean_feed,'\n------')
     clean_feed = clean_feed.split('setResponse[')[1]
+
     return clean_feed
+
+def saveJSON(json_feed, cache_dir="cache/json/"):
+    if not os.path.exists(cache_dir): os.makedirs(cache_dir)
+
+    with open(cache_dir + nameFile(json_feed) + ".json",'w') as output:
+        filename = cache_dir + nameFile(json_feed)+'.csv'
+        print(json_feed,file=output)
+
+    return True
 
 def getFeed(page_url):
     feed_url = parseURL(page_url)
     response = requests.get(feed_url)
     json_feed = json.loads(cleanFeed(response.text))
+
+    saveJSON(json_feed)
 
     return json_feed
 
@@ -52,6 +64,8 @@ def getFeed_Test(file_url):
             fstring += line
 
     json_feed = json.loads(cleanFeed(fstring))
+
+    saveJSON()
 
     return json_feed
 
@@ -64,10 +78,13 @@ def translateCSV(json_feed):
 
     data_frame = []
     for row in rows:
+        isNull = False
         nrow = [row['c'][0]['f']]
         for col in row["c"][1:]:
+            if(str(col['v']) == 'None'): isNull = True
             nrow.append(col['v'])
-        data_frame.append(nrow)
+        if(isNull == False):
+            data_frame.append(nrow)
 
     data_frame = pd.DataFrame(data_frame, columns=list(headers))
     return data_frame
@@ -86,12 +103,14 @@ def nameFile(json_feed):
 
     return name
 
-def saveFeed(page_url, cache_dir="cache/"):
+def saveFeed(page_url, cache_dir="cache/csv/"):
     cache_dir = cache_dir if '/' in cache_dir else cache_dir + '/'
     feed = getFeed(page_url)
+
     df = translateCSV(feed)
     filename = cache_dir+nameFile(feed)+'.csv'
     if not os.path.exists(cache_dir): os.makedirs(cache_dir)
+
     df.to_csv(filename)
 
     return True
