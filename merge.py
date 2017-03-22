@@ -28,17 +28,16 @@ def mapDataFrames(cache_path):
         filenames[key] = [toDataFrame(cache_path + str(filename)) for filename in os.listdir(cache_path) if key == getFeedName(filename)]
     return filenames
 
-df_index = (mapDataFrames(cache_path))
-print(df_index)
+index = (mapDataFrames(cache_path))
+print(index)
 
-# for feed in index
-if(os.path.exists(output_path + feed)):
-    # merge all new dataframes with master from 'data' folder
-#   if no: write merged version from df_index
-
-# Write merged version
-"""
-for df in dfs:
-    frame = dfs[df][0]
-    frame.to_csv("./data/"+str(df)+".csv")
-"""
+for feed in index:
+    if not os.path.exists(output_path): os.makedirs(output_path)
+    if(os.path.exists(output_path + feed)):
+        index[feed].append(toDataFrame(output_path + feed + ".csv"))
+    data_set = index[feed]
+    # Make single dataframe from data_set
+    # data_set.drop_duplicates() # This should leave only unique values
+    # Set index[feed] = single dataframe from [dataframes]
+    # Write final version to 'data' folder
+    # Clear cache
