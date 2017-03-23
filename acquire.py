@@ -13,6 +13,8 @@ import pandas as pd
 from time import gmtime, strftime
 
 def parseURL(page_url):
+    if("fetchComponent" in page_url): return page_url
+    
     filters = {
         "date" : re.findall("date=(.*\d+\-.)&.",page_url)[0],
         "query" : re.findall("q=(.*)",page_url)[0].replace(' ','%20'),
