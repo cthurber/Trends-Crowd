@@ -11,10 +11,6 @@ Descrip: Handles merge and move of files from cache into data folder for deliver
 import os,re
 import pandas as pd
 
-# REMOVE FOR FINAL COPY, REQUIRE CMD ARGS
-cache_path = "./cache/csv/"
-output_path = "./data/"
-
 def getFeedName(filename): return re.findall("(.*)__", filename)[0]
 def getFilenames(cache_path): return list(set(map(getFeedName, os.listdir(cache_path))))
 def getNumCols(filename): return len(open(filename).readline().split(','))
@@ -29,6 +25,9 @@ def mapDataFrames(cache_path):
         filenames[key] = [toDataFrame(cache_path + str(filename)) for filename in os.listdir(cache_path) if key == getFeedName(filename)]
     return filenames
 
+# REMOVE FOR FINAL COPY, REQUIRE CMD ARGS
+cache_path = "./cache/csv/"
+output_path = "./data/"
 
 index = mapDataFrames(cache_path)
 
