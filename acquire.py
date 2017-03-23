@@ -13,8 +13,9 @@ import pandas as pd
 from time import gmtime, strftime
 
 def parseURL(page_url):
+    print(page_url)
     if("fetchComponent" in page_url): return page_url
-    
+
     filters = {
         "date" : re.findall("date=(.*\d+\-.)&.",page_url)[0],
         "query" : re.findall("q=(.*)",page_url)[0].replace(' ','%20'),
@@ -99,7 +100,7 @@ def nameFile(json_feed):
     headers = [col['label'] for col in cols[1:]]
 
     for h in headers:
-        name += h + "_"
+        name += h.replace(' ','_') + "_"
 
     name += strftime("_%Y-%m-%d_%H:%M:%S", gmtime())
 
