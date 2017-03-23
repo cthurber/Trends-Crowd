@@ -15,7 +15,6 @@ def getFeedName(filename): return re.findall("(.*)__", filename)[0]
 def getFilenames(cache_path): return list(set(map(getFeedName, os.listdir(cache_path))))
 def getNumCols(filename): return len(open(filename).readline().split(','))
 def toDataFrame(filename,icol=0): return pd.read_csv(filename,index_col=int(icol))
-# def mergeFrames(frames): return pd.concat(frames).drop_duplicates()
 
 # Returns {feedname : [DataFrame1,DataFrame2, ...]} pairing
 def mapDataFrames(cache_path):
