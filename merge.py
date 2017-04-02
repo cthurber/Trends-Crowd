@@ -34,6 +34,4 @@ def mergeFeeds(cache_path="./cache/csv/", output_path="./data/"):
 
         df = pd.concat(index[feed])
         df = df.drop_duplicates(subset='Date')
-        # Make caching so as to not lose data on bad write
         df.to_csv(output_path + feed + ".csv")
-        # Clear cache
