@@ -5,6 +5,18 @@ from forms import Acquire_Feed_Form
 
 app = Flask(__name__)
 
+def add_feed(page_url,schedule="./schedule.csv"):
+
+    with open(schedule,'r') as sch:
+        queue = [line.replace('\n','') for line in sch]
+
+    if(page_url not in queue):
+
+        with open(schedule,'a') as sch:
+            print(page_url,file=sch)
+
+    return True
+
 @app.route('/', methods = ['GET', 'POST'])
 def home():
     form = Acquire_Feed_Form(request.form)
@@ -13,7 +25,7 @@ def home():
         turl = form.trends_url.data
 
         print(turl)
-        saveFeed(turl)
+        add_feed(turl)
         return render_template('confirmation.html', form=form)
     else:
         return render_template('index.html', form=form)
