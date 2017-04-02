@@ -12,15 +12,21 @@ import json,requests,re,os
 import pandas as pd
 from time import gmtime, strftime
 
+def getURLComps(page_url):
+
+    components = {
+        "date" : re.findall("date=(.*\d+\-.)&.",page_url)[0] if "date=" in page_url else "None",
+        "frequency" : re.findall("date=(.*\d+\-.)&.",page_url)[0].split('%20')[1] if "date=" in page_url else "2004-p",
+        "queries" : re.findall("q=(.*)",page_url)[0].replace(' ','%20').split(',') if "q=" in page_url else ["None"],
+        "geo" : re.findall("geo=(.*)&.",page_url)[0] if "geo=" in page_url else "Worldwide"
+    }
+
+    return components
+
 def parseURL(page_url):
-    print(page_url)
     if("fetchComponent" in page_url): return page_url
 
-    filters = {
-        "date" : re.findall("date=(.*\d+\-.)&.",page_url)[0],
-        "query" : re.findall("q=(.*)",page_url)[0].replace(' ','%20'),
-        "geo" : re.findall("geo=(.*)&.",page_url)[0]
-    }
+    filters = getURLComps(page_url)
 
     comps = {
         "base" : "http://www.google.com/trends/fetchComponent?hl=en-US",
@@ -32,7 +38,8 @@ def parseURL(page_url):
         "time" : "&tz=Etc/GMT%2B4"
     }
 
-    feed_url = comps['base'] + comps['date'] + filters['date'] + comps['query'] + filters['query'] + comps['time'] + comps['content'] + comps['cid'] + comps['export']
+    query_string = str(filters['queries']).replace("'",'').replace('[','').replace(']','').replace(', ',',')
+    feed_url = comps['base'] + comps['date'] + filters['date'] + comps['query'] + query_string + comps['time'] + comps['content'] + comps['cid'] + comps['export']
 
     return feed_url
 
@@ -92,26 +99,28 @@ def translateCSV(json_feed):
     data_frame = pd.DataFrame(data_frame, columns=list(headers))
     return data_frame
 
-def nameFile(json_feed):
+def nameFile(page_url,date=True,time=True,csv=False):
 
     name = ""
+    comps = getURLComps(page_url)
 
-    cols = json_feed['table']['cols']
-    headers = [col['label'] for col in cols[1:]]
+    for q in comps['queries']:
+        name += q + ' '
 
-    for h in headers:
-        name += h.replace(' ','_') + "_"
+    name += comps['frequency'] + '_'
 
-    name += strftime("_%Y-%m-%d_%H:%M:%S", gmtime())
+    if(date): name += strftime("_%Y-%m-%d", gmtime())
+    if(time): name += strftime("_%H:%M:%S", gmtime())
+    if(csv): name += '.csv'
 
-    return name
+    return name.replace(' ','_')
 
 def saveFeed(page_url, cache_dir="cache/csv/"):
     cache_dir = cache_dir if '/' in cache_dir else cache_dir + '/'
     feed = getFeed(page_url)
 
     df = translateCSV(feed)
-    filename = cache_dir+nameFile(feed)+'.csv'
+    filename = cache_dir+nameFile(page_url)+'.csv'
     if not os.path.exists(cache_dir): os.makedirs(cache_dir)
 
     df.to_csv(filename)
