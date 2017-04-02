@@ -13,7 +13,7 @@ import pandas as pd
 from time import gmtime, strftime
 
 def getURLComps(page_url):
-
+    page_url = str(page_url)
     components = {
         "date" : re.findall("date=(.*\d+\-.)&.",page_url)[0] if "date=" in page_url else "None",
         "frequency" : re.findall("date=(.*\d+\-.)&.",page_url)[0].split('%20')[1] if "date=" in page_url else "2004-p",
