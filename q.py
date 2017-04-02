@@ -8,20 +8,36 @@ Descrip: Scheduling daemon responsible for data collection
 
 """
 
-import time
+import time, os
 from random import randint
-from acquire import saveFeed
-from merge import mergeFeeds
+from acquire import saveFeed, nameFile
+from merge import mergeFeeds, toDataFrame
 
-while(True):
-    with open("./schedule.csv",'r') as schedule:
-        queue = [line.replace('\n','') for line in schedule]
-    if(len(queue) < 0):
-        time.sleep(62)
-    else:
-        queue = list(set(queue))
-        # TODO Check history to be sure we haven't run this feed today...
-        for feed in queue:
-            time.sleep(randint(60,70))
-            saveFeed(feed)
-        mergeFeeds()
+def main(schedule,record):
+    while(True):
+
+        if not os.path.exists(schedule): os.makedirs(schedule)
+        with open(schedule,'r') as s:
+            queue = [line.replace('\n','') for line in s]
+
+        if not os.path.exists(record): os.makedirs(record)
+        with open(record,"r") as r:
+            feeds_run = [line.replace('\n','') for line in r]
+
+        if(len(queue) < 0):
+            print("Waiting for additional feeds...")
+            time.sleep(62)
+        else:
+            queue = list(set(queue))
+
+            with open("./feed_runs.csv","a") as work_done:
+                for feed in queue:
+                    feedname = nameFile(feed,time=False)
+                    print("Running",feedname)
+                    if feedname not in feeds_run:
+                        time.sleep(randint(60,70))
+                        saveFeed(feed)
+                        print(feedname,file=work_done)
+            mergeFeeds()
+
+main("./schedule.csv","./feed_runs.csv")
