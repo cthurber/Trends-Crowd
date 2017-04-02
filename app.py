@@ -1,7 +1,7 @@
 import json,requests,os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, make_response
 from acquire import saveFeed
-from forms import Acquire_Feed_Form
+from forms import Acquire_Feed_Form, Download_CSV
 
 app = Flask(__name__)
 
@@ -32,8 +32,26 @@ def data():
     output_path = "./data/"
     feeds = {}
     for feed in os.listdir(output_path):
-        feeds[feed.replace('.csv','')] = os.path.abspath(output_path + feed)
+        feeds[feed.replace('.csv','')] = output_path + feed # os.path.abspath(output_path + feed)
     return render_template('data.html', feeds=feeds)
+
+@app.route('/download', methods = ['GET', 'POST'])
+def download():
+
+    form = Download_CSV(request.form)
+    if request.method == 'POST':
+        csv = form.csv_file.data
+        csv_string = ""
+        with open(csv, 'r') as c:
+            for line in c:
+                csv_string += line
+        fname = form.csv_name.data
+        response = make_response(csv_string)
+        cd = 'attachment; filename='+str(fname)+'.csv'
+        response.headers['Content-Disposition'] = cd
+        response.mimetype='text/csv'
+
+        return response
 
 @app.route('/about')
 def about():
