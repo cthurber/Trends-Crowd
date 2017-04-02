@@ -1,4 +1,4 @@
-import json,requests
+import json,requests,os
 from flask import Flask, render_template, request
 from acquire import saveFeed
 from forms import Acquire_Feed_Form
@@ -21,14 +21,19 @@ def add_feed(page_url,schedule="./schedule.csv"):
 def home():
     form = Acquire_Feed_Form(request.form)
     if request.method == 'POST':
-
         turl = form.trends_url.data
-
-        print(turl)
         add_feed(turl)
         return render_template('confirmation.html', form=form)
     else:
         return render_template('index.html', form=form)
+
+@app.route('/data')
+def data():
+    output_path = "./data/"
+    feeds = {}
+    for feed in os.listdir(output_path):
+        feeds[feed.replace('.csv','')] = os.path.abspath(output_path + feed)
+    return render_template('data.html', feeds=feeds)
 
 @app.route('/about')
 def about():
