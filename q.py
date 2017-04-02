@@ -33,11 +33,14 @@ def main(schedule,record):
             with open("./feed_runs.csv","a") as work_done:
                 for feed in queue:
                     feedname = nameFile(feed,time=False)
-                    print("Running",feedname)
                     if feedname not in feeds_run:
+                        print("Running",feedname)
                         time.sleep(randint(60,70))
                         saveFeed(feed)
                         print(feedname,file=work_done)
+                    else:
+                        print("Waiting for additional feeds...")
+                        time.sleep(62)
             mergeFeeds()
 
 main("./schedule.csv","./feed_runs.csv")
