@@ -33,7 +33,7 @@ def main(schedule,record):
             time.sleep(62)
         else:
             queue = list(set(queue))
-            print(queue)
+            # print(queue)
             with open("./feed_runs.csv","a") as work_done:
                 for feed in queue:
                     feedname = nameFile(feed,time=False)

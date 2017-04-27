@@ -15,18 +15,16 @@ from time import gmtime, strftime
 def getURLComps(page_url):
     page_url = str(page_url)
     components = {
-        "date" : re.findall("date=(.*\d+\-.)&.",page_url)[0] if "date=" in page_url else "None",
-        "frequency" : re.findall("date=(.*\d+\-.)&.",page_url)[0].split('%20')[1] if "date=" in page_url else "2004-p",
+        "date" : re.findall("date=([a-z]+%[0-9]+-.)",page_url)[0] if "date=" in page_url else "None",
+        "frequency" : re.findall("date=([a-z]+%[0-9]+-.)",page_url)[0].split('%20')[1] if "date=" in page_url else "2004-p",
         "queries" : re.findall("q=(.*)",page_url)[0].replace(' ','%20').split(',') if "q=" in page_url else ["None"],
-        "geo" : re.findall("geo=(.*)&.",page_url)[0] if "geo=" in page_url else "Worldwide"
+        "geo" : re.findall("geo=([A-Z]+)",page_url)[0] if "geo=" in page_url else "Worldwide"
+        "cat" : re.findall("cat=([0-9]+)", page_url)[0] if "cat=" in page_url else "All"
     }
 
     return components
 
 def parseURL(page_url):
-    if("fetchComponent" in page_url): return page_url
-
-    filters = getURLComps(page_url)
 
     comps = {
         "base" : "http://www.google.com/trends/fetchComponent?hl=en-US",
@@ -37,6 +35,14 @@ def parseURL(page_url):
         "query" : "&q=",
         "time" : "&tz=Etc/GMT%2B4"
     }
+
+    if("fetchComponent" in page_url): return page_url
+
+    # TODO Edit page to make possible to enter terms
+    if("http" not in page_url):
+        return comps['base'] + comps['date'] + "today%203-m" + comps['query'] + page_url.replace(' ','%20') + comps['time'] + comps['content'] + comps['cid'] + comps['export']
+
+    filters = getURLComps(page_url)
 
     query_string = str(filters['queries']).replace("'",'').replace('[','').replace(']','').replace(', ',',')
     feed_url = comps['base'] + comps['date'] + filters['date'] + comps['query'] + query_string + comps['time'] + comps['content'] + comps['cid'] + comps['export']
@@ -100,6 +106,8 @@ def translateCSV(json_feed):
     return data_frame
 
 def nameFile(page_url,date=True,time=True,csv=False):
+
+    if("http:" not in page_url): return page_url
 
     name = ""
     comps = getURLComps(page_url)
